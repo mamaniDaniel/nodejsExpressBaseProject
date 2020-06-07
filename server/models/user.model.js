@@ -20,7 +20,7 @@ const UserSchema= new mongoose.Schema({
     default: Date.now
   },
   updated: Date,
-  hashedPassword: {
+  password: {
     type: String,
     required: 'Contraseña es requerida'
   }
