@@ -4,14 +4,16 @@ const errorHandler= require('../helpers/dbErrorHandler');
 
 const create = (req, res, next) => { 
   const user= new User(req.body)
-  user.save((err, reuslt)=>{
+  user.save((err, userDb)=>{
     if (err){
       return res.status(400).json({
         error: errorHandler.getErrorMessage(err)
       })
     }
+    userDb.password= undefined
     res.json({
-      message: 'usuario creado'
+      message: 'usuario creado',
+      user: userDb
     })
   })
 }

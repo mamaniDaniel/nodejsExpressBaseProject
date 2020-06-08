@@ -12,13 +12,13 @@ const signin = (req, res) => {
         error: "User not found"
       })
     }
-    User.comparePassword(req.body.password, (err, passwordMatch)=>{ //A: uso el metodo que construi en el modelo para comparar password
+    userDb.comparePassword(req.body.password, (err, passwordMatch)=>{ //A: uso el metodo que construi en el modelo para comparar password
       if (err || !passwordMatch){
         return res.status(401).json({error: "Email and Password no match"})
       }
 
       const token= jwt.sign({
-        _id: user._id
+        _id: userDb._id
       }, config.jwtSecret)
 
       res.cookie("t", token,{
@@ -29,7 +29,7 @@ const signin = (req, res) => {
       
       return res.json({
         token,
-        user: {_id: user._id, name: user.name, email: user.email}
+        user: {_id: userDb._id, name: userDb.name, email: userDb.email}
       })
       //A: devuelvo la cookie en la respuestas , el cliente puede elegir guardarlo en otro lugar
     })    
