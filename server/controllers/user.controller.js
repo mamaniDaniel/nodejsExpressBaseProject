@@ -1,8 +1,16 @@
 const User= require('../models/user.model');
-//import _ from 'lodash'
+const bcrypt= require('bcrypt');
+const config= require('../../config/config');
 const errorHandler= require('../helpers/dbErrorHandler');
 
-const create = (req, res, next) => { 
+async function hash(plainText){
+  const salt= await bcrypt.genSalt(config.SaltWorkFactor);
+  const plainTextHashed= await bcrypt.hash(plainText, salt);
+  return plainTextHashed;
+}
+
+const create = async (req, res, next) => { 
+  req.body.password= await hash(req.body.password);
   const user= new User(req.body)
   user.save((err, userDb)=>{
     if (err){
@@ -45,11 +53,14 @@ const read = (req, res) => {
   return res.json(req.profile)
 }
 
-const update = (req, res, next) => { 
+const update = async(req, res, next) => {
+  if(req.body.password){
+    req.body.password= await hash(req.body.password);
+  } 
   let user= req.profile;
   user= Object.assign(user, req.body); //A: piso los valores del body en el user de la db que viene en el req gracias a userById
   user.updated= Date.now();
-  User.findOneAndUpdate({_id: req.profile._id}, user,{new: true,useFindAndModify: false} , (err, userDb)=>{
+  User.findOneAndUpdate({_id: req.profile._id}, user,{new: true,useFindAndModify: false, runValidators: true} , (err, userDb)=>{
     if (err) {
       return res.status(400).json({
         error: errorHandler.getErrorMessage(err)
