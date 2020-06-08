@@ -19,7 +19,7 @@ const create = (req, res, next) => {
 }
 
 const list = (req, res) => { 
-  User.find((err, users)=>{
+  User.find({},{password: 0},(err, users)=>{
     if(err){
       return res.status(400).json({
         error: errorHandler.getErrorMessage(err)
