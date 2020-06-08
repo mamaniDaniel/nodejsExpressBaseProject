@@ -1,10 +1,12 @@
 const express = require('express')
-var bodyParser = require('body-parser')
-const  cookieParser= require('cookie-parser')
+const bodyParser = require('body-parser')
+const cookieParser= require('cookie-parser')
 const compress= require('compression');
 const helmet = require('helmet')
+const morgan = require('morgan')
+
 const userRoutes= require('./routes/user.routes');
-var morgan = require('morgan')
+const authRoutes= require('./routes/auth.routes');
 
 const app = express()
 
@@ -20,5 +22,13 @@ app.use(compress())
 app.use(helmet())
 
 app.use('/', userRoutes);
+app.use('/', authRoutes);
+
+app.use((err,req,res,next)=>{
+  if(err.name=="UnauthorizedError"){
+    res.status(401).json({"error" : err.name + ": " + err.message})
+  }
+  //A: cath para el error lanzado por express-jwt cuando no encuentra el token
+})
 
 module.exports= app
