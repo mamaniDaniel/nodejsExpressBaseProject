@@ -6,6 +6,7 @@ mongoose.Promise= global.Promise;
 mongoose.connect(config.mongoUri,{useNewUrlParser: true,useUnifiedTopology: true, useCreateIndex: true});
 
 mongoose.connection.on('error',()=>{
+  console.log('No se puede conectar a la base de datos: ' + config.mongoUri);
   throw new Error('No se puede conectar a la base de datos: ' + config.mongoUri)
 })
 
